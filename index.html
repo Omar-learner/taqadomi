@@ -10,7 +10,7 @@
     <style>
         :root {
             --bg-gradient: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 50%, #e0c3fc 100%);
-            --glass-card: rgba(255, 255, 255, 0.65);
+            --glass-card: rgba(255, 255, 255, 0.68);
             --glass-border: rgba(255, 255, 255, 0.85);
             --text-main: #1e3a8a;
             --text-dark: #0f172a;
@@ -30,10 +30,10 @@
             padding: 20px 15px;
             display: flex;
             justify-content: center;
-            align-items: center;
+            align-items: flex-start;
         }
 
-        .container { width: 100%; max-width: 850px; }
+        .container { width: 100%; max-width: 900px; margin-top: 10px; }
 
         /* Login Screen */
         .login-box {
@@ -45,7 +45,7 @@
             text-align: center;
             box-shadow: var(--shadow-aero);
             max-width: 400px;
-            margin: 0 auto;
+            margin: 80px auto;
         }
 
         .login-box h2 { color: var(--text-main); margin-bottom: 10px; font-weight: 900; }
@@ -56,30 +56,41 @@
             padding: 12px 18px;
             border-radius: 14px;
             border: 1.5px solid var(--glass-border);
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.85);
             outline: none;
             font-size: 1rem;
             margin-bottom: 15px;
             text-align: center;
         }
 
+        .aero-textarea {
+            width: 100%;
+            padding: 12px 18px;
+            border-radius: 14px;
+            border: 1.5px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.85);
+            outline: none;
+            font-size: 0.95rem;
+            margin-bottom: 15px;
+            min-height: 90px;
+            resize: vertical;
+        }
+
         .btn-aero {
             background: var(--button-grad);
             color: white;
             border: none;
-            padding: 12px 24px;
+            padding: 10px 20px;
             border-radius: 14px;
             font-weight: 700;
             cursor: pointer;
             box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
-            width: 100%;
-            font-size: 1rem;
+            font-size: 0.95rem;
             transition: transform 0.2s;
         }
 
         .btn-aero:hover { transform: translateY(-2px); }
 
-        /* Dashboard (Hidden by default) */
         #dashboard { display: none; }
 
         header {
@@ -92,6 +103,35 @@
             box-shadow: var(--shadow-aero);
             margin-bottom: 20px;
         }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: rgba(255, 255, 255, 0.5);
+            border: 1.5px solid var(--glass-border);
+            padding: 10px 20px;
+            border-radius: 16px;
+            font-weight: 700;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+
+        .tab-btn.active {
+            background: var(--button-grad);
+            color: white;
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+        }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
 
         .stats-grid {
             display: grid;
@@ -127,7 +167,7 @@
             transition: width 0.5s ease;
         }
 
-        .phase-card {
+        .card-aero {
             background: var(--glass-card);
             border: 1.5px solid var(--glass-border);
             border-radius: 20px;
@@ -136,7 +176,7 @@
             box-shadow: var(--shadow-aero);
         }
 
-        .phase-title { font-size: 1.2rem; font-weight: 700; color: var(--text-main); margin-bottom: 12px; }
+        .card-title { font-size: 1.2rem; font-weight: 700; color: var(--text-main); margin-bottom: 12px; }
 
         .task-item {
             display: flex;
@@ -154,81 +194,164 @@
 
         .add-box { display: flex; gap: 8px; margin-top: 10px; }
         .add-box input { flex: 1; margin-bottom: 0; text-align: right; }
-        .add-box button { width: auto; }
+
+        /* Documentation & Notes styling */
+        .doc-item {
+            background: rgba(255, 255, 255, 0.6);
+            border: 1px solid var(--glass-border);
+            border-radius: 14px;
+            padding: 15px;
+            margin-bottom: 12px;
+        }
+
+        .doc-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .doc-title { font-weight: 700; color: var(--text-main); font-size: 1.05rem; }
+        .doc-date { font-size: 0.8rem; color: var(--text-muted); }
+        .doc-body { white-space: pre-wrap; font-size: 0.95rem; color: var(--text-dark); background: rgba(255,255,255,0.4); padding: 10px; border-radius: 8px; font-family: monospace; }
+
+        /* Timeline Roadmap Styling */
+        .roadmap-timeline {
+            position: relative;
+            padding-right: 20px;
+            border-right: 3px solid var(--accent-blue);
+            margin-right: 10px;
+        }
+
+        .roadmap-step {
+            position: relative;
+            margin-bottom: 20px;
+            padding-right: 15px;
+        }
+
+        .roadmap-step::before {
+            content: '';
+            position: absolute;
+            right: -27px;
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            background: var(--accent-blue);
+            border-radius: 50%;
+            box-shadow: 0 0 8px var(--accent-blue);
+        }
+
+        .del-btn { background: transparent; border: none; color: #ef4444; cursor: pointer; font-size: 1rem; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- Login Section -->
+    <!-- Login Screen -->
     <div class="login-box" id="login-screen">
         <h2>🛡️ Cyber Aero Tracker</h2>
-        <p>أدخل اسم المستخدم لمتابعة تقدمك الخاص</p>
+        <p>أدخل اسم المستخدم لمتابعة تقدمك وتوثيقاتك</p>
         <input type="text" id="username-input" class="aero-input" placeholder="اسم المستخدم (مثال: merex)" value="merex" autofocus>
-        <button class="btn-aero" onclick="login()">دخول إلى اللوحة 🚀</button>
+        <button class="btn-aero" style="width: 100%;" onclick="login()">دخول إلى اللوحة 🚀</button>
     </div>
 
-    <!-- Main Dashboard Section -->
+    <!-- Main Dashboard -->
     <div id="dashboard">
         <header>
             <h1 id="welcome-msg">🌱 أهلاً بك merex</h1>
-            <p style="color: var(--text-muted); font-size: 0.9rem;">مسار الأمن السيبراني واللينكس - مزامنة سحابية تلقائية</p>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">لوحة متابعة المسار والتوثيق المباشر</p>
         </header>
 
-        <div class="stats-grid">
-            <div class="stat-box">
-                <span style="font-size: 0.85rem; color: var(--text-muted);">الإنجاز الكلي</span>
-                <div class="stat-number" id="progress-percent">0%</div>
-                <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-fill"></div></div>
+        <!-- Navigation -->
+        <div class="nav-tabs">
+            <button class="tab-btn active" onclick="switchTab('tasks')">📋 قائمة المهام</button>
+            <button class="tab-btn" onclick="switchTab('roadmap')">🗺️ مساري التعليمي</button>
+            <button class="tab-btn" onclick="switchTab('docs')">📚 التوثيق الملاحظات (Documentation)</button>
+        </div>
+
+        <!-- TAB 1: TASKS -->
+        <div id="tab-tasks" class="tab-content active">
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <span style="font-size: 0.85rem; color: var(--text-muted);">الإنجاز الكلي</span>
+                    <div class="stat-number" id="progress-percent">0%</div>
+                    <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-fill"></div></div>
+                </div>
+                <div class="stat-box">
+                    <span style="font-size: 0.85rem; color: var(--text-muted);">الأيام المتتالية</span>
+                    <div class="stat-number" id="streak-count">0 يوم</div>
+                    <button class="btn-aero" style="font-size: 0.8rem; padding: 4px 10px; margin-top: 5px;" onclick="addStreak()">تأكيد تطبيق اليوم ✨</button>
+                </div>
             </div>
-            <div class="stat-box">
-                <span style="font-size: 0.85rem; color: var(--text-muted);">الأيام المتتالية</span>
-                <div class="stat-number" id="streak-count">0 يوم</div>
-                <button class="btn-aero" style="font-size: 0.8rem; padding: 4px 10px; margin-top: 5px;" onclick="addStreak()">تأكيد تطبيق اليوم ✨</button>
+
+            <div class="card-aero">
+                <div class="card-title">🚀 المرحلة الأولى: التأسيس والترمينال</div>
+                <div id="p1-list"></div>
+                <div class="add-box">
+                    <input type="text" id="p1-in" class="aero-input" placeholder="إضافة مهمة...">
+                    <button class="btn-aero" onclick="addTask(1)">إضافة</button>
+                </div>
+            </div>
+
+            <div class="card-aero">
+                <div class="card-title">💻 المرحلة الثانية: المفاهيم والتطبيق العميق</div>
+                <div id="p2-list"></div>
+                <div class="add-box">
+                    <input type="text" id="p2-in" class="aero-input" placeholder="إضافة مهمة...">
+                    <button class="btn-aero" onclick="addTask(2)">إضافة</button>
+                </div>
+            </div>
+
+            <div class="card-aero">
+                <div class="card-title">⚡ المرحلة الثالثة: الهندسة والمشاريع الخاصة</div>
+                <div id="p3-list"></div>
+                <div class="add-box">
+                    <input type="text" id="p3-in" class="aero-input" placeholder="إضافة مهمة...">
+                    <button class="btn-aero" onclick="addTask(3)">إضافة</button>
+                </div>
             </div>
         </div>
 
-        <!-- Phases -->
-        <div class="phase-card">
-            <div class="phase-title">🚀 المرحلة الأولى: التأسيس والترمينال</div>
-            <div id="p1-list"></div>
-            <div class="add-box">
-                <input type="text" id="p1-in" class="aero-input" placeholder="إضافة مهمة أولى...">
-                <button class="btn-aero" onclick="addTask(1)">إضافة</button>
+        <!-- TAB 2: ROADMAP -->
+        <div id="tab-roadmap" class="tab-content">
+            <div class="card-aero">
+                <div class="card-title">🗺️ شجرة ومخطط المسار التعليمي</div>
+                <div class="roadmap-timeline" id="roadmap-list"></div>
+                <div class="add-box">
+                    <input type="text" id="roadmap-in" class="aero-input" placeholder="إضافة خطوة أو مجال جديد للمسار...">
+                    <button class="btn-aero" onclick="addRoadmapStep()">إضافة للمسار</button>
+                </div>
             </div>
         </div>
 
-        <div class="phase-card">
-            <div class="phase-title">💻 المرحلة الثانية: المفاهيم والتطبيق العميق</div>
-            <div id="p2-list"></div>
-            <div class="add-box">
-                <input type="text" id="p2-in" class="aero-input" placeholder="إضافة مهمة جديدة...">
-                <button class="btn-aero" onclick="addTask(2)">إضافة</button>
+        <!-- TAB 3: DOCUMENTATION -->
+        <div id="tab-docs" class="tab-content">
+            <div class="card-aero">
+                <div class="card-title">📝 توثيق جديد (Write-up / Documentation)</div>
+                <input type="text" id="doc-title-in" class="aero-input" placeholder="عنوان التوثيق (مثال: Bandit Level 5 Writeup أو أمر find)...">
+                <textarea id="doc-body-in" class="aero-textarea" placeholder="اكتب الملاحظات، الأوامر، أو خطوات التحدي هنا..."></textarea>
+                <button class="btn-aero" onclick="addDocument()">حفظ التوثيق 💾</button>
             </div>
-        </div>
 
-        <div class="phase-card">
-            <div class="phase-title">⚡ المرحلة الثالثة: الهندسة والمشاريع الخاصة</div>
-            <div id="p3-list"></div>
-            <div class="add-box">
-                <input type="text" id="p3-in" class="aero-input" placeholder="إضافة مهمة احترافية...">
-                <button class="btn-aero" onclick="addTask(3)">إضافة</button>
+            <div class="card-aero">
+                <div class="card-title">📚 مكتبة التوثيقات والملاحظات المخزنة</div>
+                <div id="docs-list"></div>
             </div>
         </div>
     </div>
 </div>
 
 <script>
-    // Supabase Configuration
-    const SUPABASE_URL = "https://jiaoikznflisquknmlut.supabase.co/rest/v1/"; 
-    const SUPABASE_KEY = "sb_publishable_oT-x0KJebfidBLoVHRD-Nw_h7vR0WgD";
+    const SUPABASE_URL = "sb_publishable_oT-x0KJebfidBLoVHRD-Nw_h7vR0WgD"; 
+    const SUPABASE_KEY = "https://jiaoikznflisquknmlut.supabase.co/rest/v1/";
     const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     let currentUser = "";
     let userTasks = [];
     let userStreak = 0;
+    let userRoadmap = [];
+    let userDocs = [];
 
-    // Custom Default Tasks setup
     const defaultTasks = [
         { phase: 1, text: "إكمال ثلث مسار Linux Journey (تم بنجاح)", completed: true },
         { phase: 1, text: "إكمال باقي مسارات Linux Journey بالتطبيق على النظام", completed: false },
@@ -239,6 +362,14 @@
         { phase: 3, text: "قراءة وفهم هندسة لينكس من كتاب How Linux Works", completed: false },
         { phase: 3, text: "كتابة وتطبيق سكربتات أتمتة الباش (Bash Scripts)", completed: false },
         { phase: 3, text: "حل التحديات في منصات TryHackMe و Hack The Box", completed: false }
+    ];
+
+    const defaultRoadmap = [
+        "إتقان أساسيات سطر الأوامر والترمينال (Linux Journey & The Linux Command Line)",
+        "فهم الشبكات والعتاد وأنظمة التشغيل (CompTIA A+ Concepts)",
+        "أساسيات البرمجة والتفكير المنطقي (CS50)",
+        "التعمق في هندسة نظام لينكس والنواة (How Linux Works)",
+        "التطبيق العملي واختبار الاختراق (OverTheWire & TryHackMe)"
     ];
 
     async function login() {
@@ -254,30 +385,44 @@
     }
 
     async function loadUserData() {
-        let { data, error } = await supabaseClient.from('user_trackers').select('*').eq('username', currentUser).single();
+        let { data } = await supabaseClient.from('user_trackers').select('*').eq('username', currentUser).single();
 
         if (data) {
-            userTasks = data.tasks;
+            userTasks = data.tasks || defaultTasks;
             userStreak = data.streak || 0;
+            userRoadmap = data.roadmap || defaultRoadmap;
+            userDocs = data.docs || [];
         } else {
-            // New user registered automatically
             userTasks = defaultTasks;
             userStreak = 0;
+            userRoadmap = defaultRoadmap;
+            userDocs = [];
             await saveToCloud();
         }
 
-        render();
+        renderAll();
     }
 
     async function saveToCloud() {
         await supabaseClient.from('user_trackers').upsert({
             username: currentUser,
             tasks: userTasks,
-            streak: userStreak
+            streak: userStreak,
+            roadmap: userRoadmap,
+            docs: userDocs
         });
     }
 
-    function render() {
+    function switchTab(tabName) {
+        document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+
+        event.target.classList.add('active');
+        document.getElementById(`tab-${tabName}`).classList.add('active');
+    }
+
+    function renderAll() {
+        // Render Tasks
         [1, 2, 3].forEach(p => {
             const el = document.getElementById(`p${p}-list`);
             el.innerHTML = '';
@@ -293,16 +438,53 @@
         const completed = userTasks.filter(t => t.completed).length;
         const total = userTasks.length;
         const pct = total ? Math.round((completed / total) * 100) : 0;
-
         document.getElementById('progress-percent').innerText = `${pct}%`;
         document.getElementById('progress-fill').style.width = `${pct}%`;
         document.getElementById('streak-count').innerText = `${userStreak} يوم`;
+
+        // Render Roadmap
+        const rmEl = document.getElementById('roadmap-list');
+        rmEl.innerHTML = '';
+        userRoadmap.forEach((step, i) => {
+            const div = document.createElement('div');
+            div.className = 'roadmap-step';
+            div.innerHTML = `
+                <div style="display:flex; justify-content:space-between;">
+                    <strong>الخطوة ${i + 1}: ${step}</strong>
+                    <button class="del-btn" onclick="deleteRoadmap(${i})">🗑️</button>
+                </div>
+            `;
+            rmEl.appendChild(div);
+        });
+
+        // Render Docs
+        const docsEl = document.getElementById('docs-list');
+        docsEl.innerHTML = '';
+        if (userDocs.length === 0) {
+            docsEl.innerHTML = '<p style="color:var(--text-muted); text-align:center;">لا يوجد توثيقات أو ملاحظات محفوظة بعد.</p>';
+        } else {
+            userDocs.forEach((doc, i) => {
+                const div = document.createElement('div');
+                div.className = 'doc-item';
+                div.innerHTML = `
+                    <div class="doc-header">
+                        <span class="doc-title">📄 ${doc.title}</span>
+                        <div>
+                            <span class="doc-date">${doc.date}</span>
+                            <button class="del-btn" style="margin-right:8px;" onclick="deleteDoc(${i})">🗑️</button>
+                        </div>
+                    </div>
+                    <div class="doc-body">${doc.body}</div>
+                `;
+                docsEl.appendChild(div);
+            });
+        }
     }
 
     async function toggleTask(task) {
         task.completed = !task.completed;
         if (task.completed) confetti({ particleCount: 50, spread: 50 });
-        render();
+        renderAll();
         await saveToCloud();
     }
 
@@ -311,15 +493,57 @@
         if (!inp.value.trim()) return;
         userTasks.push({ phase: phase, text: inp.value.trim(), completed: false });
         inp.value = '';
-        render();
+        renderAll();
         await saveToCloud();
     }
 
     async function addStreak() {
         userStreak++;
-        render();
+        renderAll();
         confetti({ particleCount: 80, spread: 70 });
         await saveToCloud();
+    }
+
+    async function addRoadmapStep() {
+        const inp = document.getElementById('roadmap-in');
+        if (!inp.value.trim()) return;
+        userRoadmap.push(inp.value.trim());
+        inp.value = '';
+        renderAll();
+        await saveToCloud();
+    }
+
+    async function deleteRoadmap(index) {
+        userRoadmap.splice(index, 1);
+        renderAll();
+        await saveToCloud();
+    }
+
+    async function addDocument() {
+        const title = document.getElementById('doc-title-in').value.trim();
+        const body = document.getElementById('doc-body-in').value.trim();
+        if (!title || !body) return alert("الرجاء كتابة العنوان والملاحظات");
+
+        const newDoc = {
+            title: title,
+            body: body,
+            date: new Date().toLocaleDateString('ar-SA')
+        };
+
+        userDocs.unshift(newDoc);
+        document.getElementById('doc-title-in').value = '';
+        document.getElementById('doc-body-in').value = '';
+        renderAll();
+        await saveToCloud();
+        alert("تم حفظ التوثيق بنجاح! 🎉");
+    }
+
+    async function deleteDoc(index) {
+        if (confirm("هل تريد حذف هذا التوثيق؟")) {
+            userDocs.splice(index, 1);
+            renderAll();
+            await saveToCloud();
+        }
     }
 </script>
 </body>
