@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber Aero | Merex Control Center</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #a1c4fd 0%, #c2e9fb 50%, #e0c3fc 100%);
+            --glass-card: rgba(255, 255, 255, 0.65);
+            --glass-border: rgba(255, 255, 255, 0.85);
+            --text-main: #1e3a8a;
+            --text-dark: #0f172a;
+            --text-muted: #475569;
+            --accent-blue: #0284c7;
+            --shadow-aero: 0 15px 35px rgba(0, 70, 150, 0.15), inset 0 1px 2px rgba(255, 255, 255, 0.9);
+            --button-grad: linear-gradient(180deg, #38bdf8 0%, #0284c7 100%);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; }
+
+        body {
+            background: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text-dark);
+            min-height: 100vh;
+            padding: 20px 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .container { width: 100%; max-width: 850px; }
+
+        /* Login Screen */
+        .login-box {
+            background: var(--glass-card);
+            backdrop-filter: blur(16px);
+            border: 2px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px 25px;
+            text-align: center;
+            box-shadow: var(--shadow-aero);
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .login-box h2 { color: var(--text-main); margin-bottom: 10px; font-weight: 900; }
+        .login-box p { color: var(--text-muted); font-size: 0.95rem; margin-bottom: 20px; }
+
+        .aero-input {
+            width: 100%;
+            padding: 12px 18px;
+            border-radius: 14px;
+            border: 1.5px solid var(--glass-border);
+            background: rgba(255, 255, 255, 0.8);
+            outline: none;
+            font-size: 1rem;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .btn-aero {
+            background: var(--button-grad);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(2, 132, 199, 0.3);
+            width: 100%;
+            font-size: 1rem;
+            transition: transform 0.2s;
+        }
+
+        .btn-aero:hover { transform: translateY(-2px); }
+
+        /* Dashboard (Hidden by default) */
+        #dashboard { display: none; }
+
+        header {
+            text-align: center;
+            padding: 22px;
+            background: var(--glass-card);
+            backdrop-filter: blur(16px);
+            border-radius: 22px;
+            border: 2px solid var(--glass-border);
+            box-shadow: var(--shadow-aero);
+            margin-bottom: 20px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background: var(--glass-card);
+            border: 1.5px solid var(--glass-border);
+            border-radius: 18px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: var(--shadow-aero);
+        }
+
+        .stat-number { font-size: 1.8rem; font-weight: 900; color: var(--accent-blue); }
+
+        .progress-bar-bg {
+            background: rgba(255, 255, 255, 0.6);
+            height: 16px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-top: 8px;
+            border: 1px solid var(--glass-border);
+        }
+
+        .progress-bar-fill {
+            background: linear-gradient(90deg, #38bdf8, #10b981);
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s ease;
+        }
+
+        .phase-card {
+            background: var(--glass-card);
+            border: 1.5px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-aero);
+        }
+
+        .phase-title { font-size: 1.2rem; font-weight: 700; color: var(--text-main); margin-bottom: 12px; }
+
+        .task-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 14px;
+            margin-bottom: 8px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            cursor: pointer;
+        }
+
+        .task-item.completed { background: rgba(240, 253, 244, 0.7); text-decoration: line-through; color: #64748b; }
+
+        .add-box { display: flex; gap: 8px; margin-top: 10px; }
+        .add-box input { flex: 1; margin-bottom: 0; text-align: right; }
+        .add-box button { width: auto; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Login Section -->
+    <div class="login-box" id="login-screen">
+        <h2>🛡️ Cyber Aero Tracker</h2>
+        <p>أدخل اسم المستخدم لمتابعة تقدمك الخاص</p>
+        <input type="text" id="username-input" class="aero-input" placeholder="اسم المستخدم (مثال: merex)" value="merex" autofocus>
+        <button class="btn-aero" onclick="login()">دخول إلى اللوحة 🚀</button>
+    </div>
+
+    <!-- Main Dashboard Section -->
+    <div id="dashboard">
+        <header>
+            <h1 id="welcome-msg">🌱 أهلاً بك merex</h1>
+            <p style="color: var(--text-muted); font-size: 0.9rem;">مسار الأمن السيبراني واللينكس - مزامنة سحابية تلقائية</p>
+        </header>
+
+        <div class="stats-grid">
+            <div class="stat-box">
+                <span style="font-size: 0.85rem; color: var(--text-muted);">الإنجاز الكلي</span>
+                <div class="stat-number" id="progress-percent">0%</div>
+                <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-fill"></div></div>
+            </div>
+            <div class="stat-box">
+                <span style="font-size: 0.85rem; color: var(--text-muted);">الأيام المتتالية</span>
+                <div class="stat-number" id="streak-count">0 يوم</div>
+                <button class="btn-aero" style="font-size: 0.8rem; padding: 4px 10px; margin-top: 5px;" onclick="addStreak()">تأكيد تطبيق اليوم ✨</button>
+            </div>
+        </div>
+
+        <!-- Phases -->
+        <div class="phase-card">
+            <div class="phase-title">🚀 المرحلة الأولى: التأسيس والترمينال</div>
+            <div id="p1-list"></div>
+            <div class="add-box">
+                <input type="text" id="p1-in" class="aero-input" placeholder="إضافة مهمة أولى...">
+                <button class="btn-aero" onclick="addTask(1)">إضافة</button>
+            </div>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-title">💻 المرحلة الثانية: المفاهيم والتطبيق العميق</div>
+            <div id="p2-list"></div>
+            <div class="add-box">
+                <input type="text" id="p2-in" class="aero-input" placeholder="إضافة مهمة جديدة...">
+                <button class="btn-aero" onclick="addTask(2)">إضافة</button>
+            </div>
+        </div>
+
+        <div class="phase-card">
+            <div class="phase-title">⚡ المرحلة الثالثة: الهندسة والمشاريع الخاصة</div>
+            <div id="p3-list"></div>
+            <div class="add-box">
+                <input type="text" id="p3-in" class="aero-input" placeholder="إضافة مهمة احترافية...">
+                <button class="btn-aero" onclick="addTask(3)">إضافة</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Supabase Configuration
+    const SUPABASE_URL = "https://jiaoikznflisquknmlut.supabase.co/rest/v1/"; 
+    const SUPABASE_KEY = "sb_publishable_oT-x0KJebfidBLoVHRD-Nw_h7vR0WgD";
+    const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    let currentUser = "";
+    let userTasks = [];
+    let userStreak = 0;
+
+    // Custom Default Tasks setup
+    const defaultTasks = [
+        { phase: 1, text: "إكمال ثلث مسار Linux Journey (تم بنجاح)", completed: true },
+        { phase: 1, text: "إكمال باقي مسارات Linux Journey بالتطبيق على النظام", completed: false },
+        { phase: 1, text: "حل أول 5 مستويات من OverTheWire Bandit", completed: false },
+        { phase: 2, text: "البدء في مشاهدة وتطبيق دروس دورة CS50", completed: false },
+        { phase: 2, text: "دراسة واستيعاب مفاهيم A+ (العتاد والشبكات)", completed: false },
+        { phase: 2, text: "الوصول للمستوى 15 في OverTheWire Bandit", completed: false },
+        { phase: 3, text: "قراءة وفهم هندسة لينكس من كتاب How Linux Works", completed: false },
+        { phase: 3, text: "كتابة وتطبيق سكربتات أتمتة الباش (Bash Scripts)", completed: false },
+        { phase: 3, text: "حل التحديات في منصات TryHackMe و Hack The Box", completed: false }
+    ];
+
+    async function login() {
+        const input = document.getElementById('username-input').value.trim();
+        if (!input) return alert("الرجاء كتابة اسم المستخدم");
+
+        currentUser = input.toLowerCase();
+        document.getElementById('login-screen').style.display = 'none';
+        document.getElementById('dashboard').style.display = 'block';
+        document.getElementById('welcome-msg').innerText = `🌱 أهلاً بك ${input}`;
+
+        await loadUserData();
+    }
+
+    async function loadUserData() {
+        let { data, error } = await supabaseClient.from('user_trackers').select('*').eq('username', currentUser).single();
+
+        if (data) {
+            userTasks = data.tasks;
+            userStreak = data.streak || 0;
+        } else {
+            // New user registered automatically
+            userTasks = defaultTasks;
+            userStreak = 0;
+            await saveToCloud();
+        }
+
+        render();
+    }
+
+    async function saveToCloud() {
+        await supabaseClient.from('user_trackers').upsert({
+            username: currentUser,
+            tasks: userTasks,
+            streak: userStreak
+        });
+    }
+
+    function render() {
+        [1, 2, 3].forEach(p => {
+            const el = document.getElementById(`p${p}-list`);
+            el.innerHTML = '';
+            userTasks.filter(t => t.phase === p).forEach((t) => {
+                const item = document.createElement('div');
+                item.className = `task-item ${t.completed ? 'completed' : ''}`;
+                item.innerHTML = `<span>${t.text}</span> <input type="checkbox" ${t.completed ? 'checked' : ''}>`;
+                item.onclick = () => toggleTask(t);
+                el.appendChild(item);
+            });
+        });
+
+        const completed = userTasks.filter(t => t.completed).length;
+        const total = userTasks.length;
+        const pct = total ? Math.round((completed / total) * 100) : 0;
+
+        document.getElementById('progress-percent').innerText = `${pct}%`;
+        document.getElementById('progress-fill').style.width = `${pct}%`;
+        document.getElementById('streak-count').innerText = `${userStreak} يوم`;
+    }
+
+    async function toggleTask(task) {
+        task.completed = !task.completed;
+        if (task.completed) confetti({ particleCount: 50, spread: 50 });
+        render();
+        await saveToCloud();
+    }
+
+    async function addTask(phase) {
+        const inp = document.getElementById(`p${phase}-in`);
+        if (!inp.value.trim()) return;
+        userTasks.push({ phase: phase, text: inp.value.trim(), completed: false });
+        inp.value = '';
+        render();
+        await saveToCloud();
+    }
+
+    async function addStreak() {
+        userStreak++;
+        render();
+        confetti({ particleCount: 80, spread: 70 });
+        await saveToCloud();
+    }
+</script>
+</body>
+</html>
